@@ -73,8 +73,6 @@ pipeline {
 
 ![Скрин 1](https://github.com/tprvx/Netology-Homeworks/blob/8.2-Netology/img_homework/3.1.png?raw=true)
 
-![Скрин 2](https://github.com/tprvx/Netology-Homeworks/blob/8.2-Netology/img_homework/3.2.png?raw=true)
-
 ---
 
 ## Дополнительные задания (со звездочкой*)
