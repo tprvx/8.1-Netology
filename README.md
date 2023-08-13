@@ -1,1 +1,1 @@
-# Домашние задания Netology
+# Netology
