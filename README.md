@@ -33,6 +33,8 @@ zabbix
 
 ## Задание 2
 
+### install:
+
 ```
 find / -name zabbix_agentd.conf
 nano /etc/zabbix/zabbix_agentd.conf
