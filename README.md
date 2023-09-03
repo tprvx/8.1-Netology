@@ -1,4 +1,4 @@
-# "`Система мониторинга Zabbix - Часть 2`" - `Petr`
+# Система мониторинга Zabbix - Часть 2 - Petr
 
 ### UserParametr Zabbix
 
