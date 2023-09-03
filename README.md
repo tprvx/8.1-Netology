@@ -1,48 +1,68 @@
-# Домашнее задание к занятию "`Что такое DevOps. СI/СD`" - `Petr`
+# "`Система мониторинга Zabbix - Часть 2`" - `Petr`
 
-### Задание 1
+### UserParametr Zabbix
 
-![Скрин 1](https://github.com/tprvx/Netology-Homeworks/blob/8.3-Netology/img_homework/1.1.png?raw=true)
+```
+# Регистрируем свой UserParametr
+sudo find / -name zabbix_agentd.conf
+UserParameter=template_echo[*], echo $1, $2
+DebugLevel=5
+systemctl restart zabbix-agent.service
+systemctl status zabbix-agent.service
 
-![Скрин 2](https://github.com/tprvx/Netology-Homeworks/blob/8.3-Netology/img_homework/1.2.png?raw=true)
+# Утилита позволяет минуя zabbix-server работать с zabbix-agent, даже с самого агента
+sudo apt install zabbix-get
+zabbix_get -s 127.0.0.1 -p 10050 -k "system.cpu.load[all,avg1]"
+zabbix_get -s 127.0.0.1 -p 10050 -k "template_echo[123]"
+123
 
-![Скрин 3](https://github.com/tprvx/Netology-Homeworks/blob/8.3-Netology/img_homework/1.3.png?raw=true)
+cat /var/log/zabbix/zabbix_agentd.log | grep echo
+```
 
----
+nano /etc/zabbix/zabbix_agentd.d/test_user_parameter.py:
+```python
+import sys
+import os
+import re
 
-### Задание 2
+if (sys.argv[1] == '-ping'):
+    result = os.popen("ping -c 1 " + sys.argv[2]).read()
+    result = re.findall(r"time=(.*) ms", result)
+    print(result[0])
+elif (sys.argv[1] == '-simple_print'):
+    print(sys.argv[2])
+else:
+    print(f"unknown input: {sys.argv[1]}")
+```
 
-##### Код пайплайна:
-```pipeline
-stages:
-  - test
-  - build
-
-test:
-  stage: test
-  image: golang:1.17
-  script: 
-   - go test .
-
-static-analysis:
- stage: test
- image:
-  name: sonarsource/sonar-scanner-cli
-  entrypoint: [""]
- variables:
- script:
-  - sonar-scanner -Dsonar.projectKey=myproject1 -Dsonar.sources=. -Dsonar.host.url=http://192.168.1.152:9000 -Dsonar.login=<sqp_token>
-
-build:
-  stage: build
-  image: docker:latest
-  script:
-   - docker build .
+nano /etc/zabbix/zabbix_agentd.d/test_user_parameter.conf:
+```
+UserParameter=custom_py_ping[*], python3 /etc/zabbix/zabbix_agentd.d/test_user_parameter.py -ping $1
+UserParameter=custom_py_print[*], python3 /etc/zabbix/zabbix_agentd.d/test_user_parameter.py -print $1
+UserParameter=custom_py_script[*], python3 /etc/zabbix/zabbix_agentd.d/test_user_parameter.py -script $1
 
 ```
 
-![Скрин 1](https://github.com/tprvx/Netology-Homeworks/blob/8.3-Netology/img_homework/2.1.png?raw=true)
+```
+zabbix_get -s 127.0.0.1 -p 10050 -k "custom_py_ping[8.8.8.8]"
+```
 
-![Скрин 2](https://github.com/tprvx/Netology-Homeworks/blob/8.3-Netology/img_homework/2.2.png?raw=true)
+### Задание 1
 
-![Скрин 3](https://github.com/tprvx/Netology-Homeworks/blob/8.3-Netology/img_homework/2.3.png?raw=true)
+![Задание 1](https://github.com/tprvx/Netology-Homeworks/blob/8.6-Netology/img_homework/1.png?raw=true)
+
+### Задание 2-3
+
+![Задание 2-3](https://github.com/tprvx/Netology-Homeworks/blob/8.6-Netology/img_homework/2-3.png?raw=true)
+
+### Задание 4
+
+![Задание 4](https://github.com/tprvx/Netology-Homeworks/blob/8.6-Netology/img_homework/4.png?raw=true)
+
+### Задание* 5
+
+![Задание 5](https://github.com/tprvx/Netology-Homeworks/blob/8.6-Netology/img_homework/5.png?raw=true)
+
+### Задание* 8
+
+![Задание 8](https://github.com/tprvx/Netology-Homeworks/blob/8.6-Netology/img_homework/8.png?raw=true)
