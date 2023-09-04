@@ -135,7 +135,9 @@ Import Dashboard via *.json
 
 ### Задание 3*
 
-|![Задание 3](https://github.com/tprvx/Netology-Homeworks/blob/Prometheus-1/img_homework/3.1.png?raw=true)|![Задание 3](https://github.com/tprvx/Netology-Homeworks/blob/Prometheus-1/img_homework/3.2.png?raw=true)|
+![Задание 3](https://github.com/tprvx/Netology-Homeworks/blob/Prometheus-1/img_homework/3.1.png?raw=true)
+
+![Задание 3](https://github.com/tprvx/Netology-Homeworks/blob/Prometheus-1/img_homework/3.2.png?raw=true)
 
 ### Задание 4*
 
