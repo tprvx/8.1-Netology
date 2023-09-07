@@ -1,148 +1,168 @@
-# Prometheus - Часть 1 - Petr
+# Prometheus - 2 - Petr
 
-### Install Prometheus
+### Install Alertmanager
 
 ```bash
-useradd --no-create-home --shell /bin/false prometheus
-wget https://github.com/prometheus/prometheus/releases/download/v2.46.0/prometheus-2.46.0.linux-amd64.tar.gz
-tar xvfz prometheus-2.46.0.linux-amd64.tar.gz
-mkdir /etc/prometheus /var/lib/prometheus
-cp ./prometheus promtool /usr/local/bin
-cp -R ./console_libraries /etc/prometheus
-cp -R ./consoles/ /etc/prometheus
-cp ./prometheus.yml /etc/prometheus
-ls -l /etc/prometheus/
-chown -R prometheus:prometheus /etc/prometheus /var/lib/prometheus
-chown -R prometheus:prometheus /var/lib/prometheus
-chown prometheus:prometheus /usr/local/bin/prometheus /usr/local/bin/promtool
+wget https://github.com/prometheus/alertmanager/releases/download/v0.26.0/alertmanager-0.26.0.linux-amd64.tar.gz
+tar xvfz alertmanager-0.26.0.linux-amd64.tar.gz
+cp ./alertmanager-0.26.0.linux-amd64/alertmanager /usr/local/bin
+cp ./alertmanager-0.26.0.linux-amd64/amtool /usr/local/bin/
+cp ./alertmanager-0.26.0.linux-amd64/alertmanager.yml /etc/prometheus
+chown prometheus:prometheus /etc/prometheus/alertmanager.yml
 
-# отключаем gitlab-prometheus, освобождаем сокет 0.0.0.0:9090
-systemctl disable gitlab-runsvdir.service
-systemctl stop gitlab-runsvdir.service
-
-/usr/local/bin/prometheus --config.file /etc/prometheus/prometheus.yml --storage.tsdb.path /var/lib/prometheus/ --web.console.templates=/etc/prometheus/consoles --web.console.libraries=/etc/prometheus/console_libraries
-
-GET http://192.168.1.152:9090
-
-# прерываем prometeus, создаем сервис prometheus
-nano /etc/systemd/system/prometheus.service
+nano /etc/systemd/system/prometeus-alertmanager.service
 
 [Unit]
-Description=Prometheus Service
+Description=Alertmanager Service
 After=network.target
 [Service]
+EnvironmentFile=-/etc/default/alertmanager
 User=prometheus
 Group=prometheus
 Type=simple
-ExecStart=/usr/local/bin/prometheus \
---config.file /etc/prometheus/prometheus.yml \
---storage.tsdb.path /var/lib/prometheus/ \
---web.console.templates=/etc/prometheus/consoles \
---web.console.libraries=/etc/prometheus/console_libraries
-ExecReload=/bin/kill -HUP $MAINPID Restart=on-failure
+ExecStart=/usr/local/bin/alertmanager --config.file=/etc/prometheus/alertmanager.yml $ARGS
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
 [Install]
 WantedBy=multi-user.target
 
-systemctl enable prometheus.service
-systemctl start prometheus.service
-systemctl status prometheus.service
+/usr/local/bin/alertmanager --config.file=/etc/prometheus/alertmanager.yml
+--storage.path=/var/lib/prometheus/alertmanager
+GET 192.168.1.152:9093
 
-tail -n 100 /var/log/syslog
-chown -R prometheus:prometheus /var/lib/prometheus
+systemctl enable prometeus-alertmanager.service
+systemctl start prometeus-alertmanager.service
+systemctl status prometeus-alertmanager.service
+```
 
-systemctl start prometheus.service
+### Tune Alertmanager & Prometheus
+
+```Bash
+nano /etc/prometheus/prometheus.yml
+
+# Alertmanager configuration
+alerting:
+ alertmanagers:
+  - static_configs:
+    - targets:
+      - localhost:9093
+
+systemctl restart prometheus
+systemctl status prometheus
+```
+
+### Create alert rule
+
+```yml
+nano /etc/prometheus/alert-1.yml
+
+groups:
+  - name: alert-1
+    rules:
+      - alert: InstanceDown
+        expr: up == 0 # Переменная up
+        for: 1m # Если up=0 больше 1m то срабатывает alert
+        labels:
+          severity: critical # Критичность события
+        annotations: # Описание
+          summary: "Instance {{ $labels.instance }} down" # Краткое
+          description: '{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 1 minute.' # Полное
+```
+```Bash
+cd /etc/prometheus/
+nano ./prometheus.yml
+```
+```yml
+rule_files:
+  - "alert-1.yml"
+```
+```Bash
+systemctl restart prometheus
+systemctl status prometheus
+nano ./alertmanager.yml
+```
+```yml
+global:
+route:
+  group_by: ['alertname'] # Параметр группировки оповещений — по имени
+  group_wait: 30s # Сколько ждать восстановления, перед тем как отправить первое оповещение
+  group_interval: 10m # Сколько ждать, перед тем как дослать оповещение о новых сработках по текущему алерту
+  repeat_interval: 60m # Сколько ждать, перед тем как отправить повторное оповещение
+  receiver: 'email' # Способ, которым будет доставляться текущее оповещение
+receivers: # Настройка способов оповещения
+- name: 'email'
+  email_configs:
+  - to: 'yourmailto@todomain.com'
+    from: 'yourmailfrom@fromdomain.com'
+    smarthost: 'mailserver:25'
+    auth_username: 'user'
+    auth_identity: 'user'
+    auth_password: 'paS$w0rd'
+```
+```Bash
+systemctl restart prometeus-alertmanager
+systemctl status prometeus-alertmanager
+
+GET http://192.168.1.152:9093
+GET http://192.168.1.152:9090/targets?search=
+
+systemctl stop node-exporter.service
+systemctl status node-exporter.service
 
 ```
 
-### Install Node-Exporter
+### Monitoring Docker in Prometheus
 
-```bash
-wget https://github.com/prometheus/node_exporter/releases/download/v1.6.1/node_exporter-1.6.1.linux-amd64.tar.gz
-tar xfvz node_exporter-1.6.1.linux-amd64.tar.gz
-cd node_exporter-1.6.1.linux-amd64
-./node_exporter
-GET http://192.168.1.152:9100
+```Bash
+# after install Docker
+systemctl enable docker
+systemctl status docker
 
-mkdir /etc/prometheus/node-exporter
-cp ./node_exporter /etc/prometheus/node-exporter
+# тут можем менять стандартный конфиг докера
+nano /etc/docker/daemon.json
 
-nano /etc/systemd/system/node-exporter.service
+{
+    "metrics-addr": "0.0.0.0:9323",
+    "experimental": true
+}
 
-[Unit] 
-Description=Node Exporter
-After=network.target
-[Service]
-User=prometheus
-Group=prometheus
-Type=simple
-ExecStart=/etc/prometheus/node-exporter/node_exporter
-[Install]
-WantedBy=multi-user.target
+systemctl restart docker
+systemctl status docker
 
-systemctl enable node-exporter.service
-systemctl start node-exporter.service
-systemctl status node-exporter.service
+# смотрим метрики экспортера докера
+GET http://192.168.1.152:9323/metrics
+# проверка доступа с локалхоста
+curl 127.0.0.1:9323/metrics
 
 nano /etc/prometheus/prometheus.yml
 
-static-configs:
-    - targets: ["localhost:9090", "localhost:9100"]
+static_configs:
+    - targets: ["localhost:9090", "localhost:9100", "localhost:9323"]
 
-systemctl restart prometheus.service
-systemctl status prometheus.service
+systemctl restart prometheus
+systemctl status prometheus
 
 GET http://192.168.1.152:9090/targets?search=
 ```
 
-### Install Grafana
-
-```bash
-GET https://grafana.com/grafana/download?edition=oss&pg=get&plcmt=selfmanaged-box1-cta1&platform=linux
-sudo apt-get install -y adduser libfontconfig1 musl
-wget https://dl.grafana.com/oss/release/grafana_10.1.1_amd64.deb
-sudo dpkg -i grafana_10.1.1_amd64.deb
-
-systemctl enable grafana-server.service
-systemctl start grafana-server.service
-systemctl status grafana-server.service
-
-GET http://192.168.1.152:3000
-
-admin
-admin
-```
-
-### Add Dashboard to Grafana
-
-```
-Configuration > Data Sources 
-Add data sourcе
-Prometheus
-http://localhost:9090
-
-https://grafana.com/grafana/dashboards/1860-node-exporter-full/
-Download *.json
-Import Dashboard via *.json
-```
-
 ### Задание 1*
 
-![Задание 1](https://github.com/tprvx/Netology-Homeworks/blob/Prometheus-1/img_homework/1.png?raw=true)
+![Задание 1.1](https://github.com/tprvx/Netology-Homeworks/blob/Prometheus-2/img_homework/1.1.png?raw=true)
+
+![Задание 1.2](https://github.com/tprvx/Netology-Homeworks/blob/Prometheus-2/img_homework/1.2.png?raw=true)
 
 ### Задание 2*
 
-![Задание 2](https://github.com/tprvx/Netology-Homeworks/blob/Prometheus-1/img_homework/2.png?raw=true)
+![Задание 2.1](https://github.com/tprvx/Netology-Homeworks/blob/Prometheus-2/img_homework/2.1.png?raw=true)
+
+![Задание 2.2](https://github.com/tprvx/Netology-Homeworks/blob/Prometheus-2/img_homework/2.2.png?raw=true)
 
 ### Задание 3*
 
-![Задание 3](https://github.com/tprvx/Netology-Homeworks/blob/Prometheus-1/img_homework/3.1.png?raw=true)
+![Задание 3.1](https://github.com/tprvx/Netology-Homeworks/blob/Prometheus-2/img_homework/3.1.png?raw=true)
 
-![Задание 3](https://github.com/tprvx/Netology-Homeworks/blob/Prometheus-1/img_homework/3.2.png?raw=true)
+![Задание 3.2](https://github.com/tprvx/Netology-Homeworks/blob/Prometheus-2/img_homework/3.2.png?raw=true)
 
 ### Задание 4*
 
-![Задание 4](https://github.com/tprvx/Netology-Homeworks/blob/Prometheus-1/img_homework/4.png?raw=true)
-
-### Задание 5*
-
-![Задание 5](https://github.com/tprvx/Netology-Homeworks/blob/Prometheus-1/img_homework/5.png?raw=true)
+![Задание 4](https://github.com/tprvx/Netology-Homeworks/blob/Prometheus-2/img_homework/4.png?raw=true)
