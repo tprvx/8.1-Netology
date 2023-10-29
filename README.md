@@ -87,9 +87,9 @@ backend web_servers
 	server s2 127.0.0.1:9999 check
 ```
 
-![Задание 1.1](https://github.com/tprvx/Netology-Homeworks/blob/Nginx-HAProxy/img/1.1.png?raw=true)
+![Задание 1.1](https://github.com/tprvx/Netology/blob/Nginx-HAProxy/img/1.1.png?raw=true)
 
-![Задание 1.2](https://github.com/tprvx/Netology-Homeworks/blob/Nginx-HAProxy/img/1.2.png?raw=true)
+![Задание 1.2](https://github.com/tprvx/Netology/blob/Nginx-HAProxy/img/1.2.png?raw=true)
 
 
 ### Задание 2
@@ -175,11 +175,11 @@ backend web_servers
 	server s3 127.0.0.1:7777 weight 4 check inter 3s
 ```
 
-![Задание 2.1](https://github.com/tprvx/Netology-Homeworks/blob/Nginx-HAProxy/img/2.1.png?raw=true)
+![Задание 2.1](https://github.com/tprvx/Netology/blob/Nginx-HAProxy/img/2.1.png?raw=true)
 
-![Задание 2.2](https://github.com/tprvx/Netology-Homeworks/blob/Nginx-HAProxy/img/2.2.png?raw=true)
+![Задание 2.2](https://github.com/tprvx/Netology/blob/Nginx-HAProxy/img/2.2.png?raw=true)
 
-![Задание 2.3](https://github.com/tprvx/Netology-Homeworks/blob/Nginx-HAProxy/img/2.3.png?raw=true)
+![Задание 2.3](https://github.com/tprvx/Netology/blob/Nginx-HAProxy/img/2.3.png?raw=true)
 
 ### Задание 3*
 
@@ -290,4 +290,4 @@ backend web_servers
 	server s2 127.0.0.1:9999 weight 17 check inter 3s
 ```
 
-![Задание 3.1](https://github.com/tprvx/Netology-Homeworks/blob/Nginx-HAProxy/img/2.4.png?raw=true)
+![Задание 3.1](https://github.com/tprvx/Netology/blob/Nginx-HAProxy/img/3.1.png?raw=true)
