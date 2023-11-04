@@ -21,7 +21,7 @@ if [ $? -eq 0 ]
 then
 	logger "Backup was successfully created"
 else
-	logger "Backup was successfully created"
+	logger "Error when creating backup"
 fi
 
 chmod 744 create_backup.sh
