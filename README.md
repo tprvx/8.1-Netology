@@ -1,37 +1,24 @@
-# Rsync - Petr
+# Yandex.Cloud: Load Balancer - Petr
 
 ### Задание 1
 
-```bash
-sudo apt install rsync
-rsync -a --progress . /tmp/backup --exclude '.*' --exclude 'Documents' --delete --checksum
-```
-
-![Задание 1.1](https://github.com/tprvx/Netology/blob/Rsync/img/1.1.png?raw=true)
-
-### Задание 2
+С помощью Terraform поднимаем в Yandex.Cloud 2 одинаковых хоста в одной подсети, добавляем их в общую целевую группу. Создаем сетевой балансировщик L3, на 80 порту балансируем трафик в этой целевой грумме хостов. Создаем диск для хранения снэпшотов. Создаем правило создания снэпшотов. 
 
 ```bash
-nano create_backup.sh
+terraform plan
+terraform apply
 
-#!/bin/bash
+ssh root@62.84.112.5 -i ./id-rsa
 
-rsync -a --progress /home/vm9/ /tmp/backup --delete --checksum 2> /dev/null
-if [ $? -eq 0 ]
-then
-	logger "Backup was successfully created"
-else
-	logger "Error when creating backup"
-fi
+apt update
+apt install nginx
+nano /var/www/html/index.nginx-debian.html
+systemctl status nginx
 
-chmod 744 create_backup.sh
-
-crontab -e
-* 12 * * * /home/vm9/Documents/projects/Netology/create_backup.sh
-
-crontab -l
-
-sudo tail -n 10 /var/log/messages
+terraform destroy
 ```
 
-![Задание 2.1](https://github.com/tprvx/Netology/blob/Rsync/img/2.1.png?raw=true)
+![Задание 1.1](https://github.com/tprvx/Netology/blob/Yandex_LB/img/1.1.png?raw=true)
+![Задание 1.2](https://github.com/tprvx/Netology/blob/Yandex_LB/img/1.2.png?raw=true)
+![Задание 1.3](https://github.com/tprvx/Netology/blob/Yandex_LB/img/1.3.png?raw=true)
+![Задание 1.4](https://github.com/tprvx/Netology/blob/Yandex_LB/img/1.4.png?raw=true)
