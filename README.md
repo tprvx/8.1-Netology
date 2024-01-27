@@ -42,9 +42,9 @@ http://localhost:5601/app/dev_tools#/console
 GET nginx-access.log-2024.01.26/_search
 ```
 
-![Задание 3.1](https://github.com/tprvx/Netology/blob/ELK/img/3.1.png?raw=true)
-![Задание 3.2](https://github.com/tprvx/Netology/blob/ELK/img/3.2.png?raw=true)
-![Задание 3.3](https://github.com/tprvx/Netology/blob/ELK/img/3.3.png?raw=true)
+![Задание 3.1](https://github.com/tprvx/Netology/blob/ELK/img/3.1.jpg?raw=true)
+![Задание 3.2](https://github.com/tprvx/Netology/blob/ELK/img/3.2.jpg?raw=true)
+![Задание 3.3](https://github.com/tprvx/Netology/blob/ELK/img/3.3.jpg?raw=true)
 
 ### Задание 4
 
@@ -67,6 +67,6 @@ http://localhost:5601/app/dev_tools#/console
 GET filebeat-2024.01.27/_search
 ```
 
-![Задание 4.1](https://github.com/tprvx/Netology/blob/ELK/img/4.1.png?raw=true)
-![Задание 4.2](https://github.com/tprvx/Netology/blob/ELK/img/4.2.png?raw=true)
-![Задание 4.3](https://github.com/tprvx/Netology/blob/ELK/img/4.3.png?raw=true)
+![Задание 4.1](https://github.com/tprvx/Netology/blob/ELK/img/4.1.jpg?raw=true)
+![Задание 4.2](https://github.com/tprvx/Netology/blob/ELK/img/4.2.jpg?raw=true)
+![Задание 4.3](https://github.com/tprvx/Netology/blob/ELK/img/4.3.jpg?raw=true)
