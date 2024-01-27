@@ -1,0 +1,64 @@
+version: '3.7'
+
+networks:
+ default:
+   name: elastic
+   external: false
+
+volumes:
+  elasticsearch-data:
+    driver: local
+
+services:
+  elasticsearch:
+    image: elasticsearch:7.17.9
+    container_name: elasticsearch
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+      - cluster.name=my-es-docker-cluster
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+      - 9300:9300
+
+  kibana:
+    container_name: kibana
+    image: kibana:7.17.9
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+
+  logstash:
+    container_name: logstash
+    image: bitnami/logstash:7.17.9
+    environment:
+      - XPACK_MONITORING_ENABLED=false
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - 5044:5044
+    user: root
+    volumes:
+      # проброс файла пайплайна
+      - ./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+      - ./logstash/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      # проброс логов
+      - /var/log/nginx/access.log:/var/log/access.log:ro
+    # пишем где искать файл пайплайна
+    command: logstash --path.settings /usr/share/logstash/config/ --path.config /usr/share/logstash/pipeline/logstash.conf 
+    depends_on:
+      - elasticsearch
+      - kibana

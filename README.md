@@ -1,23 +1,72 @@
-# Redis & Memcached - Petr
+# ELK - Petr
 
 ### Задание 1
 
-Кэшироване помогает:
+```bash
+sudo dnf install -y nginx filefeat curl
+# docker-compose должен быть уже установлен
 
-1.1. Увеличить производительность приложения в целом
-1.2. Сократить время отклика.
-1.3. Уменьшить нагрузку на основную БД путем кэширования сложных запросов.
-1.4. Сглаживание резких всплесков траффика (помогает пережить такие моменты).
+# конфигурируем и запускаем веб-сервер
+sudo systemctl start nginx
+sudo systemctl status nginx
+sudo systemctl enable nginx
 
+sudo ./nginx.conf >> /etc/nginx/nginx.conf
+sudo systemctl reload nginx
+
+# запускаем ELK в контейнерах
+sudo docker-compose up
+
+# проверка работосопсобности Elasticsearch
+curl -X GET 'localhost:9200/_cluster/health?pretty'
+```
+
+![Задание 1.1](https://github.com/tprvx/Netology/blob/ELK/img/1.1.png?raw=true)
 
 ### Задание 2
 
-![Задание 2.1](https://github.com/tprvx/Netology/blob/Memcached-Redis/img/2.1.png?raw=true)
+```bash
+# заходим в Kibana и проверяем видимость Elasticsearch
+http://localhost:5601/app/dev_tools#/console
+GET /_cluster/health?pretty
+```
+
+![Задание 2.1](https://github.com/tprvx/Netology/blob/ELK/img/2.1.png?raw=true)
 
 ### Задание 3
 
-![Задание 3.1](https://github.com/tprvx/Netology/blob/Memcached-Redis/img/3.1.png?raw=true)
+```bash
+# сначала создаем трафик на веб сервер
+# потом идем в Kibana и ищем индекс
+http://localhost:5601/app/dev_tools#/console
+GET nginx-access.log-2024.01.26/_search
+```
+
+![Задание 3.1](https://github.com/tprvx/Netology/blob/ELK/img/3.1.png?raw=true)
+![Задание 3.2](https://github.com/tprvx/Netology/blob/ELK/img/3.2.png?raw=true)
+![Задание 3.3](https://github.com/tprvx/Netology/blob/ELK/img/3.3.png?raw=true)
 
 ### Задание 4
 
-![Задание 4.1](https://github.com/tprvx/Netology/blob/Memcached-Redis/img/4.1.png?raw=true)
+```bash
+# закомментиурем logstash сервис в ELK сначала, чтобы оттуда логи не шли
+
+sudo docker-compose down
+sudo docker-compose up
+
+# конфигурируем и запускаем Filebeat
+sudo systemctl start filefeat
+sudo systemctl status filefeat
+sudo systemctl enable filefeat
+
+sudo ./filebeat/filebeat.yml >> /etc/filebeat/filebeat.yml
+sudo systemctl restert filefeat
+
+# потом идем в Kibana и ищем индекс
+http://localhost:5601/app/dev_tools#/console
+GET filebeat-2024.01.27/_search
+```
+
+![Задание 4.1](https://github.com/tprvx/Netology/blob/ELK/img/4.1.png?raw=true)
+![Задание 4.2](https://github.com/tprvx/Netology/blob/ELK/img/4.2.png?raw=true)
+![Задание 4.3](https://github.com/tprvx/Netology/blob/ELK/img/4.3.png?raw=true)
