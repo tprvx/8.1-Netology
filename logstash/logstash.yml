@@ -1,8 +1,0 @@
-pipeline:
-  id: MY-PIPELINE
-  workers: 1
-  batch.size: 1
-  ecs_compatibility: disabled
-  batch:
-    size: 125
-    delay: 50
