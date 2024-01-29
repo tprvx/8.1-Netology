@@ -2,11 +2,12 @@
 
 ### Задание 1
 
+```sql
 1 таблица
 Сотрудники {
 	id сотруюника, SERIAL, PRIMARY KEY,
-	id ФИО сотрудника, внешний ключ, integer,
-	id должности, внешний ключ, integer,
+	id ФИО сотрудника, FOREIGN KEY, integer,
+	id должности, FOREIGN KEY, integer,
 	Дата найма, integer,
 }
 
@@ -14,8 +15,8 @@
 Структурные подразделения{
 	id cтруктурного подразделения SERIAL, PRIMARY KEY,
 	Название, character varying(100),
-	id типа подразделения, внешний ключ, integer,
-	id филиала, внешний ключ, integer,
+	id типа подразделения, FOREIGN KEY, integer,
+	id филиала, FOREIGN KEY, integer,
 }
 
 3 таблица
@@ -29,7 +30,7 @@
 	id должности, SERIAL, PRIMARY KEY,
 	Должность, character varying(100),
 	Оклад, Decimal(10, 2),
-	id структурного подразделения, внешний ключ, integer
+	id структурного подразделения, FOREIGN KEY, integer
 }
 
 5 таблица
@@ -44,7 +45,7 @@
 Проекты {
 	id проекта, SERIAL, PRIMARY KEY,
 	Название проета, character varying(100),
-	id назначенного сотрудника, внешний ключ, integer
+	id назначенного сотрудника, FOREIGN KEY, integer
 }
 
 7 таблица
@@ -54,3 +55,4 @@
 	Имя, character varying(100),
 	Отчество, character varying(100),
 }
+```
