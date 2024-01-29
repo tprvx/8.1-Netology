@@ -1,65 +1,56 @@
-# RabbitMQ - Petr
+# Database - Petr
 
 ### Задание 1
 
-```bash
-chmod +x cluster-entrypoint.sh
-docker-compose up
-```
+1 таблица
+Сотрудники {
+	id сотруюника, SERIAL, PRIMARY KEY,
+	id ФИО сотрудника, внешний ключ, integer,
+	id должности, внешний ключ, integer,
+	Дата найма, integer,
+}
 
-![Задание 1.1](https://github.com/tprvx/Netology/blob/RabbitMQ/img/1.1.png?raw=true)
+2 таблица 
+Структурные подразделения{
+	id cтруктурного подразделения SERIAL, PRIMARY KEY,
+	Название, character varying(100),
+	id типа подразделения, внешний ключ, integer,
+	id филиала, внешний ключ, integer,
+}
 
-### Задание 2
+3 таблица
+Типы подразделений {
+	id типа подразделения, SERIAL, PRIMARY KEY,
+	Тип подразделения character varying(30)
+}
 
-```bash
-pip install pika
-python3 producer.py
-python3 consumer.py
-```
+4 таблица
+Должности {
+	id должности, SERIAL, PRIMARY KEY,
+	Должность, character varying(100),
+	Оклад, Decimal(10, 2),
+	id структурного подразделения, внешний ключ, integer
+}
 
-![Задание 2.1](https://github.com/tprvx/Netology/blob/RabbitMQ/img/2.1.png?raw=true)
-![Задание 2.2](https://github.com/tprvx/Netology/blob/RabbitMQ/img/2.2.png?raw=true)
+5 таблица
+Филиалы {
+	id филиала, SERIAL, PRIMARY KEY,
+	Область, character varying(100),
+	Город, character varying(100),
+	Адрес, character varying(100)
+}
 
-### Задание 3
+6 таблица
+Проекты {
+	id проекта, SERIAL, PRIMARY KEY,
+	Название проета, character varying(100),
+	id назначенного сотрудника, внешний ключ, integer
+}
 
-```bash
-echo "172.22.0.2 rmq1" >> /etc/hosts
-echo "172.22.0.3 rmq2" >> /etc/hosts
-echo "172.22.0.4 rmq3" >> /etc/hosts
-
-docker exec -it aa838b3f285c /bin/bash
-rabbitmqctl set_policy ha-all "" '{"ha-mode":"all","ha-sync-mode":"automatic"}'
-rabbitmqctl cluster_status
-docker exec -it 89344e81a3c3 /bin/bash
-rabbitmqctl set_policy ha-all "" '{"ha-mode":"all","ha-sync-mode":"automatic"}'
-rabbitmqctl cluster_status
-docker exec -it baf09e281f2f /bin/bash
-rabbitmqctl set_policy ha-all "" '{"ha-mode":"all","ha-sync-mode":"automatic"}'
-rabbitmqctl cluster_status
-
-python3 producer.py
-
-docker exec -it aa838b3f285c /bin/bash
-rabbitmqadmin --username=user --password=pass get queue='hello'
-docker exec -it 89344e81a3c3 /bin/bash
-rabbitmqadmin --username=user --password=pass get queue='hello'
-docker exec -it baf09e281f2f /bin/bash
-rabbitmqadmin --username=user --password=pass get queue='hello'
-
-docker stop aa838b3f285c
-
-python3 consumer.py
-
-docker-compose down
-```
-
-![Задание 3.1](https://github.com/tprvx/Netology/blob/RabbitMQ/img/3.1.png?raw=true)
-![Задание 3.2](https://github.com/tprvx/Netology/blob/RabbitMQ/img/3.2.png?raw=true)
-![Задание 3.3](https://github.com/tprvx/Netology/blob/RabbitMQ/img/3.3.png?raw=true)
-![Задание 3.4](https://github.com/tprvx/Netology/blob/RabbitMQ/img/3.4.png?raw=true)
-![Задание 3.5](https://github.com/tprvx/Netology/blob/RabbitMQ/img/3.5.png?raw=true)
-![Задание 3.6](https://github.com/tprvx/Netology/blob/RabbitMQ/img/3.6.png?raw=true)
-![Задание 3.7](https://github.com/tprvx/Netology/blob/RabbitMQ/img/3.7.png?raw=true)
-![Задание 3.8](https://github.com/tprvx/Netology/blob/RabbitMQ/img/3.8.png?raw=true)
-![Задание 3.9](https://github.com/tprvx/Netology/blob/RabbitMQ/img/3.9.png?raw=true)
-![Задание 3.10](https://github.com/tprvx/Netology/blob/RabbitMQ/img/3.10.png?raw=true)
+7 таблица
+ФИО {
+	id ФИО, SERIAL, PRIMARY KEY,
+	Фамилия, character varying(100),
+	Имя, character varying(100),
+	Отчество, character varying(100),
+}
