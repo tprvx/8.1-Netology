@@ -6,8 +6,9 @@
 1 таблица
 Сотрудники {
 	id сотруюника, SERIAL, PRIMARY KEY,
-	id ФИО сотрудника, FOREIGN KEY, integer,
+	ФИО сотрудника, character varying(100),
 	id должности, FOREIGN KEY, integer,
+	id оклада, FOREIGN KEY, integer,
 	Дата найма, integer,
 }
 
@@ -29,7 +30,6 @@
 Должности {
 	id должности, SERIAL, PRIMARY KEY,
 	Должность, character varying(100),
-	Оклад, Decimal(10, 2),
 	id структурного подразделения, FOREIGN KEY, integer
 }
 
@@ -49,10 +49,9 @@
 }
 
 7 таблица
-ФИО {
-	id ФИО, SERIAL, PRIMARY KEY,
-	Фамилия, character varying(100),
-	Имя, character varying(100),
-	Отчество, character varying(100),
+Оклад {
+	id оклада, SERIAL, PRIMARY KEY,
+	id сотрудника FOREIGN KEY, integer,
+	Оклад, Decimal(10, 2)
 }
 ```
