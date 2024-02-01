@@ -1,57 +1,83 @@
-# Database - Petr
+# DDL-DML - Petr
 
 ### Задание 1
 
+##### Пункт 1-2
+
+![Задание 1.1](https://github.com/tprvx/Netology/blob/DDL-DML/img/1-2.png?raw=true)
+
+
+##### Пункт 3
+
 ```sql
-1 таблица
-Сотрудники {
-	id сотруюника, SERIAL, PRIMARY KEY,
-	ФИО сотрудника, character varying(100),
-	id должности, FOREIGN KEY, integer,
-	id оклада, FOREIGN KEY, integer,
-	Дата найма, integer,
-}
+SELECT User, Host FROM mysql.User;
+```
 
-2 таблица 
-Структурные подразделения{
-	id cтруктурного подразделения SERIAL, PRIMARY KEY,
-	Название, character varying(100),
-	id типа подразделения, FOREIGN KEY, integer,
-	id филиала, FOREIGN KEY, integer,
-}
+![Задание 1.3](https://github.com/tprvx/Netology/blob/DDL-DML/img/3.png?raw=true)
 
-3 таблица
-Типы подразделений {
-	id типа подразделения, SERIAL, PRIMARY KEY,
-	Тип подразделения character varying(30)
-}
 
-4 таблица
-Должности {
-	id должности, SERIAL, PRIMARY KEY,
-	Должность, character varying(100),
-	id структурного подразделения, FOREIGN KEY, integer
-}
+##### Пункт 4
 
-5 таблица
-Филиалы {
-	id филиала, SERIAL, PRIMARY KEY,
-	Область, character varying(100),
-	Город, character varying(100),
-	Адрес, character varying(100)
-}
+```sql
+GRANT ALL PRIVILEGES ON *.* to 'sys_temp'@'localhost';
+```
 
-6 таблица
-Проекты {
-	id проекта, SERIAL, PRIMARY KEY,
-	Название проета, character varying(100),
-	id назначенного сотрудника, FOREIGN KEY, integer
-}
+![Задание 1.4](https://github.com/tprvx/Netology/blob/DDL-DML/img/4.png?raw=true)
 
-7 таблица
-Оклад {
-	id оклада, SERIAL, PRIMARY KEY,
-	id сотрудника FOREIGN KEY, integer,
-	Оклад, Decimal(10, 2)
-}
+
+##### Пункт 5
+
+```sql
+SELECT * FROM mysql.user WHERE User='sys_temp';
+```
+или
+```sql
+SHOW GRANTS FOR 'sys_temp'@'localhost';
+```
+
+![Задание 1.5](https://github.com/tprvx/Netology/blob/DDL-DML/img/5.png?raw=true)
+
+
+##### Пункт 6
+
+в MySQL Shell:
+\connect sys_temp@localhost:3306
+
+![Задание 1.6](https://github.com/tprvx/Netology/blob/DDL-DML/img/6.png?raw=true)
+
+
+##### Пункт 7
+
+```sql
+ALTER USER 'sys_temp'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';
+```
+![Задание 1.7](https://github.com/tprvx/Netology/blob/DDL-DML/img/7.png?raw=true)
+
+
+##### Пункт 8
+
+![Задание 1.8](https://github.com/tprvx/Netology/blob/DDL-DML/img/8.png?raw=true)
+
+
+### Задание 2
+
+```js
+Название таблицы | Название первичного ключа
+--------------------------------------------
+addres           | address_id
+country	         | country_id
+store	         | store_id
+film_category	 | film_id
+staff	         | staff_id
+payment	         | payment_id
+film	         | film_id
+city	         | city_id
+category	     | category_id
+rental	         | rental_id
+film_text	     | film_id
+customer	     | customer_id
+film_actor	     | film_id
+actor	         | actor_id
+inventory	     | inventory_id
+language	     | language_id
 ```
