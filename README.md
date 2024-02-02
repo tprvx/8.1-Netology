@@ -1,83 +1,45 @@
-# DDL-DML - Petr
+# SQL1 - Petr
 
 ### Задание 1
 
-##### Пункт 1-2
-
-![Задание 1.1](https://github.com/tprvx/Netology/blob/DDL-DML/img/1-2.png?raw=true)
-
-
-##### Пункт 3
-
 ```sql
-SELECT User, Host FROM mysql.User;
+SELECT DISTINCT district FROM sakila.address 
+WHERE district LIKE 'K%a'
+	and district NOT LIKE '% %' 
+ORDER BY district ASC;
 ```
 
-![Задание 1.3](https://github.com/tprvx/Netology/blob/DDL-DML/img/3.png?raw=true)
-
-
-##### Пункт 4
-
-```sql
-GRANT ALL PRIVILEGES ON *.* to 'sys_temp'@'localhost';
-```
-
-![Задание 1.4](https://github.com/tprvx/Netology/blob/DDL-DML/img/4.png?raw=true)
-
-
-##### Пункт 5
-
-```sql
-SELECT * FROM mysql.user WHERE User='sys_temp';
-```
-или
-```sql
-SHOW GRANTS FOR 'sys_temp'@'localhost';
-```
-
-![Задание 1.5](https://github.com/tprvx/Netology/blob/DDL-DML/img/5.png?raw=true)
-
-
-##### Пункт 6
-
-в MySQL Shell:
-\connect sys_temp@localhost:3306
-
-![Задание 1.6](https://github.com/tprvx/Netology/blob/DDL-DML/img/6.png?raw=true)
-
-
-##### Пункт 7
-
-```sql
-ALTER USER 'sys_temp'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';
-```
-![Задание 1.7](https://github.com/tprvx/Netology/blob/DDL-DML/img/7.png?raw=true)
-
-
-##### Пункт 8
-
-![Задание 1.8](https://github.com/tprvx/Netology/blob/DDL-DML/img/8.png?raw=true)
+![Задание 1.1](https://github.com/tprvx/Netology/blob/SQL1/img/1.png?raw=true)
 
 
 ### Задание 2
 
-```js
-Название таблицы | Название первичного ключа
---------------------------------------------
-addres           | address_id
-country	         | country_id
-store	         | store_id
-film_category	 | film_id
-staff	         | staff_id
-payment	         | payment_id
-film	         | film_id
-city	         | city_id
-category	     | category_id
-rental	         | rental_id
-film_text	     | film_id
-customer	     | customer_id
-film_actor	     | film_id
-actor	         | actor_id
-inventory	     | inventory_id
-language	     | language_id
+```sql
+SELECT * FROM sakila.payment
+WHERE cast(payment_date AS DATE) >= cast('2005-06-15' AS DATE)
+	and cast(payment_date AS DATE) <= cast('2005-06-18' AS DATE)
+    and amount > 10
+ORDER BY payment_date ASC, customer_id DESC;
 ```
+
+![Задание 2.1](https://github.com/tprvx/Netology/blob/SQL1/img/2.png?raw=true)
+
+
+### Задание 3
+
+```sql
+SELECT * FROM sakila.rental ORDER BY rental_id DESC LIMIT 5;
+```
+
+![Задание 3.1](https://github.com/tprvx/Netology/blob/SQL1/img/3.png?raw=true)
+
+
+### Задание 4
+
+```sql
+SELECT customer_id, replace(lower(first_name), 'll', 'pp') as first_name, lower(last_name)
+FROM sakila.customer
+WHERE first_name IN ('Kelly', 'Willie');
+```
+
+![Задание 4.1](https://github.com/tprvx/Netology/blob/SQL1/img/4.png?raw=true)
