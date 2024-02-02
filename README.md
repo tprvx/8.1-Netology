@@ -5,7 +5,7 @@
 ```sql
 SELECT DISTINCT district FROM sakila.address 
 WHERE district LIKE 'K%a'
-	and district NOT LIKE '% %' 
+	and POSITION(' ' IN district)=0 
 ORDER BY district ASC;
 ```
 
