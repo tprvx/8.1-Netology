@@ -1,36 +1,43 @@
-# SQL2 - Petr
+# INDEXES - Petr
 
 ### Задание 1
 
 ```sql
-SELECT staff.first_name 'Имя', staff.last_name 'Фамилия', city.city 'Город', 
-	(SELECT count(*) FROM sakila.customer GROUP BY store_id HAVING count(*) > 300) 'Кол-во'
-FROM sakila.staff staff
-JOIN sakila.staff store ON store.store_id = staff.store_id
-JOIN sakila.address address ON store.address_id = address.address_id
-JOIN sakila.city city ON city.city_id = address.city_id
-WHERE staff.store_id=(SELECT store_id FROM sakila.customer GROUP BY store_id HAVING count(*) > 300);
+SELECT sum(index_length)/sum(data_length)* 100  Отношение
+FROM INFORMATION_SCHEMA.TABLES
+WHERE table_name IN (
+	"actor",
+    "address",
+    "category",
+    "city",
+    "country",
+    "customer",
+    "film",
+    "film_actor",
+    "film_category",
+    "film_text",
+    "inventory",
+    "language",
+    "payment",
+    "rental",
+    "staff",
+    "store"
+);
 ```
 
-![Задание 1.1](https://github.com/tprvx/Netology/blob/SQL2/img/1.png?raw=true)
+![Задание 1.1](https://github.com/tprvx/Netology/blob/INDEXES/img/1.png?raw=true)
 
 
 ### Задание 2
 
-```sql
-SELECT count(*) FROM sakila.film WHERE length > (SELECT avg(length) FROM sakila.film);
-```
-
-![Задание 2.1](https://github.com/tprvx/Netology/blob/SQL2/img/2.png?raw=true)
-
-
-### Задание 3
+Запрос переделал, он был похож больше на диверсию, за 5.5 секунд выполнялся, переписанный запрос за 0.015 секунд выполняется, думаю дальше оптимизировать нет смысла
 
 ```sql
-SELECT MONTH(CAST(payment_date AS DATE)) Месяц, sum(amount) Сумма, count(*) Аренд
-FROM sakila.payment
-GROUP BY Месяц
-ORDER BY Сумма DESC LIMIT 1;
+SELECT DISTINCT concat(c.last_name, ' ', c.first_name) Покупатель, sum(p.amount) Сумма
+FROM sakila.payment p
+JOIN sakila.customer c ON c.customer_id=p.customer_id
+WHERE DATE(p.payment_date)='2005-07-30'
+GROUP BY Покупатель;
 ```
 
-![Задание 3.1](https://github.com/tprvx/Netology/blob/SQL2/img/3.png?raw=true)
+![Задание 2.1](https://github.com/tprvx/Netology/blob/INDEXES/img/2.png?raw=true)
