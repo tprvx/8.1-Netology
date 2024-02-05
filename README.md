@@ -62,6 +62,4 @@ WHERE p.payment_date >= '2005-07-30' and p.payment_date < DATE_ADD('2005-07-30',
 GROUP BY Покупатель;
 ```
 
-![Задание 2.1](https://github.com/tprvx/Netology/blob/INDEXES/img/2.1.png?raw=true)
-
-![Задание 2.1](https://github.com/tprvx/Netology/blob/INDEXES/img/2.2.png?raw=true)
+![Задание 2.2](https://github.com/tprvx/Netology/blob/INDEXES/img/2.2.png?raw=true)
