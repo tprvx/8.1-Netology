@@ -43,6 +43,6 @@ SHOW MASTER STATUS\G
 SHOW SLAVE STATUS\G
 ```
 
-![Задание 2.1](https://github.com/tprvx/Netology/blob/Replication/img/2.1.jpg?raw=true)
-![Задание 2.2](https://github.com/tprvx/Netology/blob/Replication/img/2.2.jpg?raw=true)
-![Задание 2.3](https://github.com/tprvx/Netology/blob/Replication/img/2.3.jpg?raw=true)
+![Задание 2.1](https://github.com/tprvx/Netology/blob/Replication/img/1.png?raw=true)
+![Задание 2.2](https://github.com/tprvx/Netology/blob/Replication/img/2.png?raw=true)
+![Задание 2.3](https://github.com/tprvx/Netology/blob/Replication/img/3.png?raw=true)
