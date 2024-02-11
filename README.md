@@ -1,37 +1,75 @@
-# Restore - Petr
+# Managed Databases - PostgreSQL Cluster YC - Petr
 
 
 ### Задание 1
 
-1.1. В этом случае нужно просто каждый день в определенное время, например в 12:00 делать полный бэкап БД встроенными средствами, можно написать для этого скрипт и поместить в cron. И удалять старый бэкап или хранить эти бэкапы, к примеру за последные 10 дней с интревалом 1 день. Я бы советовал девать бэкап в виде набора sql запросов, чтобы не зависеть от версии БД.
+Подключаемся к кластеру
 
-1.2. Всё то же самое, только интревал раз в час.
+```Bash
+mkdir -p ~/.postgresql && \
+wget "https://storage.yandexcloud.net/cloud-certs/CA.pem" \
+    --output-document ~/.postgresql/root.crt && \
+chmod 0600 ~/.postgresql/root.crt
 
-1.3. В качестве решения можно запустить от 2-х БД, настроить между ними синхронную репликацию master-master. Настроить keepalived и при выходе из строя первой БД к примеру будет автоматически переключаться на работу со второй. Настроить мониторинг и алертменеджер и он сразу будет сообщать о выходе из строя ноды, чтобы своевременно их поднимать. Но бэкапирование я бы оставил всё равно, чтобы скрипт делал полный бэкап каждый час на отдельном сервере.
+sudo apt update && sudo apt install --yes postgresql-client
 
+psql "host=rc1a-u26i64mt2lroulej.mdb.yandexcloud.net,rc1b-ru95wckhm1433bm8.mdb.yandexcloud.net \
+    port=6432 \
+    sslmode=verify-full \
+    dbname=Chocolate \
+    user=chocolate \
+    target_session_attrs=read-write"
 
-### Задание 2
-
-2.1. Дамп и восстановление одной БД в текстовом виде (не зависит от версии pg_dump и pg_restore):
-```bash
-pg_dump -h localhost -U postgres -W -d exchange > exchange.sql
-sudo -u postgres psql -U postgres -W -d exchange < exchange.sql
+SELECT version();
 ```
 
-2.2. Нужно просто написать bash скрипт и поместить его в cron.
+Проверяем что подключились к мастеру
 
-### Задание 3
-
-3.1.
-
-С помощью программы mysqlbackup проводится создание инкрементальной резервной копии сервера mysql, включая все базы данных
-
-```bash
-mysqlbackup --defaults-file=/home/dbadmin/my.cnf \
-  --incremental --incremental-base=history:last_backup \
-  --backup-dir=/home/dbadmin/temp_dir \
-  --backup-image=incremental_image1.bi \
-   backup-to-image
+```Bash
+select case when pg_is_in_recovery() then 'REPLICA' else 'MASTER' end;
 ```
 
-3.2. Использование реплики БД более предпочитительно в случае, если настроена синхронная репликация, в случае поломки master нужно будет просто переключиться на реплику в ручном или автоматическом режиме и продолжить работу как ни в чем не бывало
+Количество подключенных реплик
+
+```Bash
+select count(*) from pg_stat_replication;
+```
+
+Создаем на мастере таблицу и заполняем ее
+
+```Bash
+CREATE TABLE test_table(text varchar);
+insert into test_table values('Строка 1');
+insert into test_table values('Строка 2');
+insert into test_table values('Строка 22334');
+\q
+```
+
+Подключаемся на реплику и проверяем что данные реплицировались
+
+```Bash
+psql "host=rc1a-u26i64mt2lroulej.mdb.yandexcloud.net,rc1b-ru95wckhm1433bm8.mdb.yandexcloud.net \
+    port=6432 \
+    sslmode=verify-full \
+    dbname=Chocolate \
+    user=chocolate \
+    host=rc1b-ru95wckhm1433bm8.mdb.yandexcloud.net"
+
+# проверка что подключились к реплике
+select case when pg_is_in_recovery() then 'REPLICA' else 'MASTER' end;
+
+# состояние репликации
+select status from pg_stat_wal_receiver;
+
+# проверяем что механизм репликации данных работает между зонами доступности облака
+select * from test_table;
+```
+
+![Задание 1.1](https://github.com/tprvx/Netology/blob/MDB/img/1.png?raw=true)
+![Задание 1.2](https://github.com/tprvx/Netology/blob/MDB/img/2.png?raw=true)
+![Задание 1.3](https://github.com/tprvx/Netology/blob/MDB/img/3.png?raw=true)
+![Задание 1.4](https://github.com/tprvx/Netology/blob/MDB/img/4.png?raw=true)
+![Задание 1.5](https://github.com/tprvx/Netology/blob/MDB/img/5.png?raw=true)
+![Задание 1.6](https://github.com/tprvx/Netology/blob/MDB/img/6.png?raw=true)
+![Задание 1.7](https://github.com/tprvx/Netology/blob/MDB/img/7.png?raw=true)
+![Задание 1.8](https://github.com/tprvx/Netology/blob/MDB/img/8.png?raw=true)
