@@ -1,75 +1,37 @@
-# Managed Databases - PostgreSQL Cluster YC - Petr
+# Vulnerabilities and attacks - Petr
 
 
 ### Задание 1
 
-Подключаемся к кластеру
+Находим открытые порты служб и их версии
 
 ```Bash
-mkdir -p ~/.postgresql && \
-wget "https://storage.yandexcloud.net/cloud-certs/CA.pem" \
-    --output-document ~/.postgresql/root.crt && \
-chmod 0600 ~/.postgresql/root.crt
-
-sudo apt update && sudo apt install --yes postgresql-client
-
-psql "host=rc1a-u26i64mt2lroulej.mdb.yandexcloud.net,rc1b-ru95wckhm1433bm8.mdb.yandexcloud.net \
-    port=6432 \
-    sslmode=verify-full \
-    dbname=Chocolate \
-    user=chocolate \
-    target_session_attrs=read-write"
-
-SELECT version();
+nmap -sV 192.168.1.182
 ```
 
-Проверяем что подключились к мастеру
+Разрешены службы, порты которых открыты на этом скриншоте:
 
-```Bash
-select case when pg_is_in_recovery() then 'REPLICA' else 'MASTER' end;
-```
+![Задание 1.1](https://github.com/tprvx/Netology/blob/Vulnerabilities/img/1.1.png?raw=true)
 
-Количество подключенных реплик
+Список некоторых найденных уязвимостей:
 
-```Bash
-select count(*) from pg_stat_replication;
-```
+* vsftpd 2.3.4 - https://www.exploit-db.com/exploits/17491
+* Samba smbd 3.X - 4.X - https://www.exploit-db.com/exploits/37834
+* PostgreSQL DB 8.3.0 - 8.3.7 - https://www.exploit-db.com/exploits/32849
 
-Создаем на мастере таблицу и заполняем ее
 
-```Bash
-CREATE TABLE test_table(text varchar);
-insert into test_table values('Строка 1');
-insert into test_table values('Строка 2');
-insert into test_table values('Строка 22334');
-\q
-```
+### Задание 2
 
-Подключаемся на реплику и проверяем что данные реплицировались
+* Режим сканирования SYN посылает пакет с флагом SYN, если порт открыт, целевой сервер отправляет пакет с флагами SYN, ASK, затем nmap отправляет пакет с флагом FIN чтобы завершить TCP соединение. Если порт закрыт, то пакет с флагами SYN, ASK с целевого сервера не отправляется.
 
-```Bash
-psql "host=rc1a-u26i64mt2lroulej.mdb.yandexcloud.net,rc1b-ru95wckhm1433bm8.mdb.yandexcloud.net \
-    port=6432 \
-    sslmode=verify-full \
-    dbname=Chocolate \
-    user=chocolate \
-    host=rc1b-ru95wckhm1433bm8.mdb.yandexcloud.net"
+* Режим сканирования FIN посылает пакет с флагом FIN, используется для определения точно закрытых портов. Если порт закрыт, то будет ответ RST, ASK. Если такого ответа не пришло, то неизвестно открыт ли порт.
 
-# проверка что подключились к реплике
-select case when pg_is_in_recovery() then 'REPLICA' else 'MASTER' end;
+* Режим сканирования XMAS - посылаает пакеты с фалгами PSH, URG и FIN. Ожидает пакеты RST, ASK для закрытых портов. Более скрытно, чем SYN сканирование, оно может проникать через определенные брандмауэры без отслеживания состояния и маршрутизаторы с фильтрацией пакетов.
 
-# состояние репликации
-select status from pg_stat_wal_receiver;
+* Режим UDP сканирования - посылат пакеты UDP как правило без данных. Если в ответ получено что-то, то порт открыт.
 
-# проверяем что механизм репликации данных работает между зонами доступности облака
-select * from test_table;
-```
+Открытый порт в разных типах сканирования:
+![Задание 2.1](https://github.com/tprvx/Netology/blob/Vulnerabilities/img/2.1.png?raw=true)
 
-![Задание 1.1](https://github.com/tprvx/Netology/blob/MDB/img/1.png?raw=true)
-![Задание 1.2](https://github.com/tprvx/Netology/blob/MDB/img/2.png?raw=true)
-![Задание 1.3](https://github.com/tprvx/Netology/blob/MDB/img/3.png?raw=true)
-![Задание 1.4](https://github.com/tprvx/Netology/blob/MDB/img/4.png?raw=true)
-![Задание 1.5](https://github.com/tprvx/Netology/blob/MDB/img/5.png?raw=true)
-![Задание 1.6](https://github.com/tprvx/Netology/blob/MDB/img/6.png?raw=true)
-![Задание 1.7](https://github.com/tprvx/Netology/blob/MDB/img/7.png?raw=true)
-![Задание 1.8](https://github.com/tprvx/Netology/blob/MDB/img/8.png?raw=true)
+Закрытый порт в разных типах сканирования:
+![Задание 2.2](https://github.com/tprvx/Netology/blob/Vulnerabilities/img/2.2.png?raw=true)
