@@ -8,7 +8,7 @@
 
 Ставим Suricata:
 
-```Bash
+```bash
 sudo apt install suricata
 sudo suricata-update
 
@@ -36,7 +36,7 @@ apt-get install rsyslog
 
 Ставим fail2ban:
 
-```Bash
+```bash
 sudo apt install fail2ban
 # без него служба не запускается
 touch /var/log/auth.log
@@ -52,7 +52,7 @@ cat /var/log/fail2ban.log
 
 Сканируем порты в разных режимах c Kali:
 
-```Bash
+```bash
 sudo nmap -sA 192.168.1.110
 sudo nmap -sS 192.168.1.110
 sudo nmap -sT 192.168.1.110
@@ -69,13 +69,13 @@ sudo nmap -sV 192.168.1.110
 
 Проводим подбор пароля без включенной защиты от брутфорса fail2ban
 
-```Bash
+```bash
 hydra -L logins.txt -P pass.txt 192.168.1.110 ssh
 ```
 
 Включаем защиту от брутфорса и снова подбираем
 
-```Bash
+```bash
 nano /etc/fail2ban/jail.conf
 	...
 	[sshd]
